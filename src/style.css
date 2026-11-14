@@ -1,0 +1,52 @@
+/* ===================== Base ===================== */
+:root {
+  --bg: #050510;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  background: var(--bg);
+  height: 700vh; /* scroll runway for the camera journey */
+  overflow-x: hidden;
+}
+
+#webgl {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+/* ===================== Loading ===================== */
+.loading-bar {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  z-index: 100;
+  transition: opacity 0.6s ease;
+}
+.loading-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background: #7de3ff;
+  animation: load 0.9s ease forwards;
+}
+@keyframes load {
+  to {
+    width: 100%;
+  }
+}
