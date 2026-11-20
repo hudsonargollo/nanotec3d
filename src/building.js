@@ -269,6 +269,89 @@ export function createBuilding(scene) {
     b.add(frame)
   }
 
+  // ---------------- Rooftop amenities: pool, skybridge, parrilleros ----------------
+  // Swimming pool + skybridge deck; parrilleros (grill dining) on the edges.
+  // Purely geometry-based (PRD: no image textures in the scene).
+  const poolDeckMat = new THREE.MeshStandardMaterial({
+    color: '#bcbec4', roughness: 0.6, metalness: 0.0,
+  });
+  const poolWaterMat = new THREE.MeshStandardMaterial({
+    color: '#14314d', roughness: 0.3, metalness: 0.08, envMapIntensity: 1.0,
+  });
+  const bridgeMat = new THREE.MeshStandardMaterial({
+    color: '#c6cacb', roughness: 0.5, metalness: 0.15,
+  });
+  const railMat = new THREE.MeshStandardMaterial({
+    color: '#2a2a30', roughness: 0.6, metalness: 0.7,
+  });
+  const parrileroMat = new THREE.MeshStandardMaterial({
+    color: '#222228', roughness: 0.5, metalness: 0.8,
+  });
+  const flameMat = new THREE.MeshBasicMaterial({ color: '#ff6a2a' });
+
+  // ---- pool deck / rim ----
+  const poolDeck = new THREE.Mesh(
+    new THREE.BoxGeometry(19, 0.35, 5.6), poolDeckMat
+  );
+  poolDeck.position.set(0, PODIUM_H + RES_H + 0.25, 0);
+  poolDeck.receiveShadow = true;
+  b.add(poolDeck);
+
+  // ---- pool water ----
+  const water = new THREE.Mesh(
+    new THREE.BoxGeometry(18, 0.24, 5.0), poolWaterMat
+  );
+  water.position.set(0, PODIUM_H + RES_H + 0.49, 0);
+  water.receiveShadow = true;
+  b.add(water);
+
+  // ---- infinity-edge highlight ----
+  const hlMat = new THREE.MeshBasicMaterial({ color: '#2fb8d8' });
+  const hl = new THREE.Mesh(
+    new THREE.BoxGeometry(18, 0.03, 0.05), hlMat
+  );
+  hl.position.set(0, PODIUM_H + RES_H + 0.66, 0);
+  b.add(hl);
+
+  // ---- skybridge deck crossing over the pool ----
+  const bridge = new THREE.Mesh(
+    new THREE.BoxGeometry(24, 0.12, 2.2), bridgeMat
+  );
+  bridge.position.set(0, PODIUM_H + RES_H + 1.78, 0);
+  bridge.receiveShadow = true;
+  b.add(bridge);
+  // ---- bridge railings ----
+  for (let zx = -12; zx <= 12; zx += 24) {
+    const r = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 2.2), railMat);
+    r.position.set(zx, PODIUM_H + RES_H + 1.84, 0);
+    b.add(r);
+    const f = new THREE.Mesh(new THREE.BoxGeometry(24, 0.05, 0.05), railMat);
+    f.position.set(0, PODIUM_H + RES_H + 1.84, zx);
+    b.add(f);
+  }
+
+  // ---- parrilleros (grill dining) on the roof edges ----
+  // 4 west (left) + 6 east (right)
+  const parrilleroPositions = [-30.5, -26.5, -22.5, -18.5, 11.2, 15.2, 19.2, 23.2, 27.2, 31.2];
+  for (const px of parrilleroPositions) {
+    const hood = new THREE.Mesh(
+      new THREE.BoxGeometry(2.6, 1.2, 2.0), parrileroMat
+    );
+    hood.position.set(px, PODIUM_H + RES_H + 0.5, 0);
+    hood.castShadow = true;
+    b.add(hood);
+    // glowing burner
+    const flame = new THREE.Mesh(
+      new THREE.CircleGeometry(0.45, 8),
+      flameMat
+    );
+    flame.position.set(px, PODIUM_H + RES_H + 1.12, 0);
+    flame.rotation.x = -Math.PI / 2;
+    flame.material.opacity = 0.9;
+    flame.material.transparent = true;
+    b.add(flame);
+  }
+
   // ---------------- Podium ----------------
   const podium = new THREE.Mesh(new THREE.BoxGeometry(TOTAL_W, PODIUM_H, 22), matConcrete)
   podium.position.set(0, PODIUM_H / 2, 2)
